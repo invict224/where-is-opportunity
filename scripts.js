@@ -5,8 +5,17 @@ window.onload = function() {
             const location = `${data.city}, ${data.region}, ${data.country}`;
             document.getElementById('location').innerHTML = `Your location: ${location}`;
 
-            // Replace this part with actual Mars tracking logic
-            document.getElementById('mars-info').innerHTML = `Mars is currently visible from ${location}.`;
-        })
-        .catch(error => console.error('Error fetching location:', error));
-};
+            const latitude = data.latitude;
+            const longitude = data.longitude;
+            const appId = 'af0637f3-ec55-4460-bf3d-5b6e869f5396';
+            const appSecret = 'f58acdd049c575d670a0c1d06d2f14c0e03ac7407f815acbe482bf311c2b622dea92e9e0959d7307a19a39a56aff782e1c2f62c6b4ff4401e1718b1fddd42eba72db0e63bdf9f6ef4b9a63345a8b8c43fd5e6560887b6dd788e580432dc5b453e56f4224b6d194f560f2c43589191d8b';
+
+            fetch(`https://api.astronomyapi.com/api/v2/bodies/positions/mars?latitude=${latitude}&longitude=${longitude}&from_date=today&to_date=today&time=00:00:00`, {
+                headers: {
+                    'Authorization': `Basic ${btoa(`${appId}:${appSecret}`)}`
+                }
+            })
+                .then(response => response.json())
+                .then(marsData => {
+                    const marsPosition = marsData.data.table.rows[0].cells;
+                    document.getElementById('mars-info').innerHTML = `Mars is currently at Right Ascension: ${marsPosition[0].value}, Declination: ${marsPosition
