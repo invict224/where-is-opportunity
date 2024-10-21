@@ -18,4 +18,9 @@ window.onload = function() {
                 .then(response => response.json())
                 .then(marsData => {
                     const marsPosition = marsData.data.table.rows[0].cells;
-                    document.getElementById('mars-info').innerHTML = `Mars is currently at Right Ascension: ${marsPosition[0].value}, Declination: ${marsPosition
+                    document.getElementById('mars-info').innerHTML = `Mars is currently at Right Ascension: ${marsPosition[0].value}, Declination: ${marsPosition[1].value}.`;
+                })
+                .catch(error => console.error('Error fetching Mars data:', error));
+        })
+        .catch(error => console.error('Error fetching location:', error));
+};
