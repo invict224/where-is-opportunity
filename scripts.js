@@ -19,7 +19,7 @@ window.onload = function() {
             fetch(url, {
                 method: 'GET',
                 headers: {
-                    'Authorization': `Basic ${authString}`
+                    'Authorization': `Bearer ${appSecret}`
                 }
             })
                 .then(response => {
@@ -30,7 +30,7 @@ window.onload = function() {
                 })
                 .then(marsData => {
                     console.log('Mars Data:', marsData);
-                    const marsPosition = marsData.data.table.rows[0].cells;
+                    const marsPosition = marsData.data.table.rows[0].cells;  // Double-check the structure of returned data
                     document.getElementById('mars-info').innerHTML = `Mars is currently at Right Ascension: ${marsPosition[0].value}, Declination: ${marsPosition[1].value}.`;
                 })
                 .catch(error => console.error('Error fetching Mars data:', error));
