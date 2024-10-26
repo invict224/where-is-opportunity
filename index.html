@@ -1,14 +1,71 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Mars Tracker</title>
+    <title>Mars Sky Position</title>
+    <meta name="viewport" content="width=device-width,maximum-scale=2">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Mars Tracker</h1>
-    <div id="location"></div>
-    <div id="mars-info"></div>
+    <div class="container">
+        <h1>Mars Sky Position Tracker</h1>
+
+        <div class="observer-panel">
+            <h2>Observer Location</h2>
+            <table>
+                <tr>
+                    <td>
+                        <div>Date and Time:</div>
+                        <div>
+                            <input type="checkbox" id="AutoTimeCheckBox" onchange="OnToggleAutoTime()">
+                            <label for="AutoTimeCheckBox">Automatic</label>
+                        </div>
+                    </td>
+                    <td>
+                        <input type="datetime" id="DateTimeBox" size="30">
+                    </td>
+                </tr>
+                <tr>
+                    <td>Latitude:</td>
+                    <td><input type="text" id="EditLatitude" pattern="[\-\+]?\d+(\.\d*)?" size="10"></td>
+                </tr>
+                <tr>
+                    <td>Longitude:</td>
+                    <td><input type="text" id="EditLongitude" pattern="[\-\+]?\d+(\.\d*)?" size="10"></td>
+                </tr>
+                <tr>
+                    <td>Elevation (m):</td>
+                    <td><input type="text" id="EditElevation" pattern="[\-\+]?\d+(\.\d*)?" size="10"></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="position-panel">
+            <h2>Mars Position</h2>
+            <div class="coordinates">
+                <div class="coord-group">
+                    <label>Right Ascension:</label>
+                    <span id="Mars_ra" class="value"></span>°
+                </div>
+                <div class="coord-group">
+                    <label>Declination:</label>
+                    <span id="Mars_dec" class="value"></span>°
+                </div>
+                <div class="coord-group">
+                    <label>Azimuth:</label>
+                    <span id="Mars_az" class="value"></span>°
+                </div>
+                <div class="coord-group">
+                    <label>Altitude:</label>
+                    <span id="Mars_alt" class="value"></span>°
+                </div>
+            </div>
+            <div class="viewing-tip">
+                <p>To find Mars: Face <span id="direction"></span>, and look <span id="altitude"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/astronomy-engine/2.1.19/astronomy.browser.min.js"></script>
     <script src="scripts.js"></script>
 </body>
 </html>
