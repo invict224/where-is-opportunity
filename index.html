@@ -2,8 +2,114 @@
 <html>
 <head>
     <title>Mars Sky Position</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,maximum-scale=2">
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Including styles directly in HTML to ensure they load */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #ff6b6b;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+
+        .observer-panel, .position-panel {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        td {
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        input[type="text"], input[type="datetime"] {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 5px 10px;
+            color: #ffffff;
+            border-radius: 4px;
+            width: 200px;
+        }
+
+        .coordinates {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .coord-group {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .coord-group label {
+            display: block;
+            color: #ffd700;
+            margin-bottom: 5px;
+        }
+
+        .value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #ff6b6b;
+        }
+
+        .viewing-tip {
+            text-align: center;
+            font-size: 1.2em;
+            padding: 20px;
+            background: rgba(255, 107, 107, 0.1);
+            border-radius: 8px;
+        }
+
+        #direction, #altitude {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 5px;
+        }
+
+        label {
+            color: #ffffff;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -16,25 +122,25 @@
                     <td>
                         <div>Date and Time:</div>
                         <div>
-                            <input type="checkbox" id="AutoTimeCheckBox" onchange="OnToggleAutoTime()">
+                            <input type="checkbox" id="AutoTimeCheckBox" checked onchange="OnToggleAutoTime()">
                             <label for="AutoTimeCheckBox">Automatic</label>
                         </div>
                     </td>
                     <td>
-                        <input type="datetime" id="DateTimeBox" size="30">
+                        <input type="text" id="DateTimeBox" size="30" readonly>
                     </td>
                 </tr>
                 <tr>
                     <td>Latitude:</td>
-                    <td><input type="text" id="EditLatitude" pattern="[\-\+]?\d+(\.\d*)?" size="10"></td>
+                    <td><input type="text" id="EditLatitude" pattern="[\-\+]?\d+(\.\d*)?" value="30" size="10"></td>
                 </tr>
                 <tr>
                     <td>Longitude:</td>
-                    <td><input type="text" id="EditLongitude" pattern="[\-\+]?\d+(\.\d*)?" size="10"></td>
+                    <td><input type="text" id="EditLongitude" pattern="[\-\+]?\d+(\.\d*)?" value="-90" size="10"></td>
                 </tr>
                 <tr>
                     <td>Elevation (m):</td>
-                    <td><input type="text" id="EditElevation" pattern="[\-\+]?\d+(\.\d*)?" size="10"></td>
+                    <td><input type="text" id="EditElevation" pattern="[\-\+]?\d+(\.\d*)?" value="0" size="10"></td>
                 </tr>
             </table>
         </div>
@@ -44,28 +150,187 @@
             <div class="coordinates">
                 <div class="coord-group">
                     <label>Right Ascension:</label>
-                    <span id="Mars_ra" class="value"></span>°
+                    <span id="Mars_ra" class="value">--</span>°
                 </div>
                 <div class="coord-group">
                     <label>Declination:</label>
-                    <span id="Mars_dec" class="value"></span>°
+                    <span id="Mars_dec" class="value">--</span>°
                 </div>
                 <div class="coord-group">
                     <label>Azimuth:</label>
-                    <span id="Mars_az" class="value"></span>°
+                    <span id="Mars_az" class="value">--</span>°
                 </div>
                 <div class="coord-group">
                     <label>Altitude:</label>
-                    <span id="Mars_alt" class="value"></span>°
+                    <span id="Mars_alt" class="value">--</span>°
                 </div>
             </div>
             <div class="viewing-tip">
-                <p>To find Mars: Face <span id="direction"></span>, and look <span id="altitude"></span></p>
+                <p>To find Mars: Face <span id="direction">--</span>, and look <span id="altitude">--</span></p>
             </div>
         </div>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/astronomy-engine/2.1.19/astronomy.browser.min.js"></script>
-    <script src="scripts.js"></script>
+    <!-- Load the Astronomy Engine library -->
+    <script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.js"></script>
+    <script>
+        // [Previous JavaScript code goes here]
+        function OnToggleAutoTime() {
+            const checkbox = document.getElementById('AutoTimeCheckBox');
+            const editbox = document.getElementById('DateTimeBox');
+            if (checkbox.checked) {
+                editbox.setAttribute('readonly', true);
+            } else {
+                editbox.removeAttribute('readonly');
+            }
+        }
+
+        window.onload = function() {
+            const StorageKey = 'MarsTracker.Options';
+            var Options;
+
+            function ParseDate(s) {
+                return new Date((s || '').replace(' ', 'T'));
+            }
+
+            function IsValidNumber(s) {
+                return typeof s === 'string' && /^[\-\+]?\d+(\.\d*)?$/.test(s);
+            }
+
+            function IsValidDate(s) {
+                const d = ParseDate(s);
+                return Number.isFinite(d.getTime());
+            }
+
+            function LoadOptions() {
+                let options;
+                try {
+                    options = JSON.parse(window.localStorage.getItem(StorageKey));
+                } catch (e) {
+                }
+
+                if (!options) options = {};
+                if (!IsValidNumber(options.latitude))  options.latitude  = '30';
+                if (!IsValidNumber(options.longitude)) options.longitude = '-90';
+                if (!IsValidNumber(options.elevation)) options.elevation = '0';
+                if (typeof options.automatic !== 'boolean') options.automatic = true;
+                if (!IsValidDate(options.date)) options.date = FormatDate(new Date());
+                return options;
+            }
+
+            function SaveOptions() {
+                try {
+                    window.localStorage.setItem(StorageKey, JSON.stringify(Options));
+                } catch (e) {
+                }
+            }
+
+            function Init() {
+                let options = LoadOptions();
+                document.getElementById('EditLatitude').value  = options.latitude;
+                document.getElementById('EditLongitude').value = options.longitude;
+                document.getElementById('EditElevation').value = options.elevation;
+                document.getElementById('DateTimeBox').value = options.date;
+                let checkbox = document.getElementById('AutoTimeCheckBox');
+                checkbox.checked = options.automatic;
+                OnToggleAutoTime();
+                return options;
+            }
+
+            function Pad(s, w) {
+                s = s.toFixed(0);
+                while (s.length < w) {
+                    s = '0' + s;
+                }
+                return s;
+            }
+
+            function FormatDate(date) {
+                var year = Pad(date.getFullYear(), 4);
+                var month = Pad(1 + date.getMonth(), 2);
+                var day = Pad(date.getDate(), 2);
+                var hour = Pad(date.getHours(), 2);
+                var minute = Pad(date.getMinutes(), 2);
+                var second = Pad(date.getSeconds(), 2);
+                return `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+            }
+
+            function FormatCoord(x) {
+                return x.toFixed(2);
+            }
+
+            function getDirection(azimuth) {
+                const directions = ['North', 'Northeast', 'East', 'Southeast', 'South', 'Southwest', 'West', 'Northwest'];
+                const index = Math.round(azimuth / 45) % 8;
+                return directions[index];
+            }
+
+            function getAltitudeDescription(altitude) {
+                if (altitude < 0) return "below the horizon (not visible)";
+                if (altitude < 15) return "very low on the horizon";
+                if (altitude < 45) return "low in the sky";
+                if (altitude < 75) return "high in the sky";
+                return "nearly overhead";
+            }
+
+            function UpdateScreen() {
+                const autotime = document.getElementById('AutoTimeCheckBox').checked;
+                const timebox = document.getElementById('DateTimeBox');
+                let text_latitude = document.getElementById('EditLatitude').value;
+                let text_longitude = document.getElementById('EditLongitude').value;
+                let text_elevation = document.getElementById('EditElevation').value;
+                let date;
+
+                if (autotime) {
+                    date = new Date();
+                    timebox.value = FormatDate(date);
+                } else {
+                    date = ParseDate(timebox.value);
+                }
+
+                if (!IsValidDate(timebox.value) || !IsValidNumber(text_latitude) || !IsValidNumber(text_longitude) || !IsValidNumber(text_elevation)) {
+                    document.querySelector('.position-panel').style.opacity = '0.5';
+                    document.querySelector('.viewing-tip').style.display = 'none';
+                } else {
+                    document.querySelector('.position-panel').style.opacity = '1';
+                    document.querySelector('.viewing-tip').style.display = 'block';
+
+                    let latitude = parseFloat(text_latitude);
+                    let longitude = parseFloat(text_longitude);
+                    let elevation = parseFloat(text_elevation);
+                    
+                    if (latitude !== Options.latitude || longitude !== Options.longitude || elevation !== Options.elevation || Options.automatic !== autotime) {
+                        Options = {
+                            latitude: text_latitude,
+                            longitude: text_longitude,
+                            elevation: text_elevation,
+                            automatic: autotime,
+                            date: timebox.value
+                        };
+                        SaveOptions();
+                    }
+                    
+                    let observer = new Astronomy.Observer(latitude, longitude, elevation);
+                    let equ_2000 = Astronomy.Equator('Mars', date, observer, false, true);
+                    let equ_ofdate = Astronomy.Equator('Mars', date, observer, true, true);
+                    let hor = Astronomy.Horizon(date, observer, equ_ofdate.ra, equ_ofdate.dec, 'normal');
+                    
+                    document.getElementById('Mars_ra').innerText = FormatCoord(equ_2000.ra);
+                    document.getElementById('Mars_dec').innerText = FormatCoord(equ_2000.dec);
+                    document.getElementById('Mars_az').innerText = FormatCoord(hor.azimuth);
+                    document.getElementById('Mars_alt').innerText = FormatCoord(hor.altitude);
+
+                    // Update viewing directions
+                    document.getElementById('direction').innerText = getDirection(hor.azimuth);
+                    document.getElementById('altitude').innerText = getAltitudeDescription(hor.altitude);
+                }
+
+                setTimeout(UpdateScreen, 1000);
+            }
+
+            Options = Init();
+            UpdateScreen();
+        }
+    </script>
 </body>
 </html>
